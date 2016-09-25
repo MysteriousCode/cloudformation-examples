@@ -1,0 +1,38 @@
+{
+    "Description": "ELB with Proxy Protocol enabled for ports 80 and 443",
+    "Resources": {
+        "ElasticLoadBalancer": {
+            "Properties": {
+                "Listeners": [
+                    {
+                        "InstancePort": "80",
+                        "LoadBalancerPort": "80",
+                        "Protocol": "TCP"
+                    },
+                    {
+                        "InstancePort": "443",
+                        "LoadBalancerPort": "443",
+                        "Protocol": "TCP"
+                    }
+                ],
+                "Policies": [
+                    {
+                        "Attributes": [
+                            {
+                                "Name": "ProxyProtocol",
+                                "Value": "true"
+                            }
+                        ],
+                        "InstancePorts": [
+                            "80",
+                            "443"
+                        ],
+                        "PolicyName": "EnableProxyProtocol",
+                        "PolicyType": "ProxyProtocolPolicyType"
+                    }
+                ]
+            },
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
+        }
+    }
+}
