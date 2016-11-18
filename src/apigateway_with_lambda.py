@@ -151,13 +151,19 @@ api_first_method = template.add_resource(apigateway.Method(
     ]
 ))
 
+
 api_deployment = template.add_resource(apigateway.Deployment(
     "APIDeployment",
-    RestApiId=Ref(api),
-    StageName="live",
-    StageDescription=apigateway.StageDescription(
-        CacheClusterEnabled=False,
-    )
+    RestApiId=Ref(api)
 ))
+
+api_stage = template.add_resource(apigateway.Stage(
+    "APIStage",
+    CacheClusterEnabled=False,
+    DeploymentId=Ref(api_deployment),
+    RestApiId=Ref(api),
+    StageName="live"
+))
+
 
 print template.to_json()

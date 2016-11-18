@@ -22,11 +22,7 @@
             "Properties": {
                 "RestApiId": {
                     "Ref": "API"
-                },
-                "StageDescription": {
-                    "CacheClusterEnabled": false
-                },
-                "StageName": "live"
+                }
             },
             "Type": "AWS::ApiGateway::Deployment"
         },
@@ -148,6 +144,19 @@
                 }
             },
             "Type": "AWS::Lambda::Permission"
+        },
+        "APIStage": {
+            "Properties": {
+                "CacheClusterEnabled": false,
+                "DeploymentId": {
+                    "Ref": "APIDeployment"
+                },
+                "RestApiId": {
+                    "Ref": "API"
+                },
+                "StageName": "live"
+            },
+            "Type": "AWS::ApiGateway::Stage"
         },
         "LambaRole": {
             "Properties": {
