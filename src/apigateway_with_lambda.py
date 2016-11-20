@@ -1,8 +1,5 @@
-from troposphere import GetAtt, Ref, Template, Parameter, Join
-from troposphere import iam
-from troposphere import awslambda
-from troposphere import apigateway
 from awacs import aws, sts
+from troposphere import GetAtt, Join, Parameter, Ref, Template, apigateway, awslambda, iam
 
 template = Template()
 
@@ -151,7 +148,6 @@ api_first_method = template.add_resource(apigateway.Method(
     ]
 ))
 
-
 api_deployment = template.add_resource(apigateway.Deployment(
     "APIDeployment",
     RestApiId=Ref(api)
@@ -164,6 +160,5 @@ api_stage = template.add_resource(apigateway.Stage(
     RestApiId=Ref(api),
     StageName="live"
 ))
-
 
 print template.to_json()

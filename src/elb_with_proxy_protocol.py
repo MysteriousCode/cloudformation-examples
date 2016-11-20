@@ -1,5 +1,5 @@
 from troposphere import Template
-from troposphere.elasticloadbalancing import LoadBalancer, Listener
+from troposphere.elasticloadbalancing import Listener, LoadBalancer
 
 t = Template()
 
