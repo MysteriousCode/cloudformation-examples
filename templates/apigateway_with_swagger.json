@@ -1,0 +1,52 @@
+{
+    "Description": "Example API Gateway from Swagger",
+    "Parameters": {
+        "FileName": {
+            "Description": "Name of the Swagger file inside S3 bucket",
+            "Type": "String"
+        },
+        "SourceBucket": {
+            "Description": "Name of the bucket where Swagger file is stored",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "API": {
+            "Properties": {
+                "BodyS3Location": {
+                    "Bucket": {
+                        "Ref": "SourceBucket"
+                    },
+                    "Key": {
+                        "Ref": "FileName"
+                    }
+                },
+                "Description": "My API",
+                "Name": "MyAPI"
+            },
+            "Type": "AWS::ApiGateway::RestApi"
+        },
+        "APIDeployment": {
+            "DependsOn": "API",
+            "Properties": {
+                "RestApiId": {
+                    "Ref": "API"
+                }
+            },
+            "Type": "AWS::ApiGateway::Deployment"
+        },
+        "APIStage": {
+            "Properties": {
+                "CacheClusterEnabled": false,
+                "DeploymentId": {
+                    "Ref": "APIDeployment"
+                },
+                "RestApiId": {
+                    "Ref": "API"
+                },
+                "StageName": "live"
+            },
+            "Type": "AWS::ApiGateway::Stage"
+        }
+    }
+}

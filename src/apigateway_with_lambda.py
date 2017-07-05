@@ -3,7 +3,7 @@ from troposphere import GetAtt, Join, Parameter, Ref, Template, apigateway, awsl
 
 template = Template()
 
-template.add_description("Image gateway")
+template.add_description("Example API Gateway with Lambda as backend")
 
 param_lambda_source_bucket = template.add_parameter(Parameter(
     "LambdaSourceBucket",
@@ -150,7 +150,8 @@ api_first_method = template.add_resource(apigateway.Method(
 
 api_deployment = template.add_resource(apigateway.Deployment(
     "APIDeployment",
-    RestApiId=Ref(api)
+    RestApiId=Ref(api),
+    DependsOn=api_first_method.title
 ))
 
 api_stage = template.add_resource(apigateway.Stage(

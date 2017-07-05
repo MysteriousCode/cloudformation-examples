@@ -1,5 +1,5 @@
 {
-    "Description": "Image gateway",
+    "Description": "Example API Gateway with Lambda as backend",
     "Parameters": {
         "LambdaFileName": {
             "Description": "Name of the ZIP file with lambda function sources inside S3 bucket",
@@ -19,6 +19,7 @@
             "Type": "AWS::ApiGateway::RestApi"
         },
         "APIDeployment": {
+            "DependsOn": "APIFirstResourceMethodGET",
             "Properties": {
                 "RestApiId": {
                     "Ref": "API"
