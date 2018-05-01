@@ -162,4 +162,4 @@ api_stage = template.add_resource(apigateway.Stage(
     StageName="live"
 ))
 
-print template.to_json()
+print(template.to_json())

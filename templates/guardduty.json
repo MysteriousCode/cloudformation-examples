@@ -1,0 +1,59 @@
+{
+    "Conditions": {
+        "IsMaster": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AWS::AccountId"
+                },
+                "1234"
+            ]
+        },
+        "IsMember": {
+            "Fn::Not": [
+                {
+                    "Condition": "IsMaster"
+                }
+            ]
+        }
+    },
+    "Description": "GuardDuty example deployment for master and member accounts",
+    "Parameters": {
+        "MemberInvitation": {
+            "Description": "Invitation ID for member account, leave empty on master account",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "Detector": {
+            "Properties": {
+                "Enable": "true"
+            },
+            "Type": "AWS::GuardDuty::Detector"
+        },
+        "Master": {
+            "Condition": "IsMember",
+            "Properties": {
+                "DetectorId": {
+                    "Ref": "Detector"
+                },
+                "InvitationId": {
+                    "Ref": "MemberInvitation"
+                },
+                "MasterId": "1234"
+            },
+            "Type": "AWS::GuardDuty::Master"
+        },
+        "Member": {
+            "Condition": "IsMaster",
+            "Properties": {
+                "DetectorId": {
+                    "Ref": "Detector"
+                },
+                "Email": "user@example.com",
+                "MemberId": "5678",
+                "Status": "Invited"
+            },
+            "Type": "AWS::GuardDuty::Member"
+        }
+    }
+}
