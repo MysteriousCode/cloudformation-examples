@@ -30,6 +30,26 @@
             },
             "Type": "AWS::GuardDuty::Detector"
         },
+        "EventsRule": {
+            "Condition": "IsMaster",
+            "Properties": {
+                "EventPattern": {
+                    "source": [
+                        "aws.guardduty"
+                    ]
+                },
+                "State": "ENABLED",
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Ref": "SNSTopic"
+                        },
+                        "Id": "sns"
+                    }
+                ]
+            },
+            "Type": "AWS::Events::Rule"
+        },
         "Master": {
             "Condition": "IsMember",
             "Properties": {
@@ -54,6 +74,42 @@
                 "Status": "Invited"
             },
             "Type": "AWS::GuardDuty::Member"
+        },
+        "SNSTopic": {
+            "Condition": "IsMaster",
+            "Properties": {
+                "Subscription": []
+            },
+            "Type": "AWS::SNS::Topic"
+        },
+        "SNSTopicPolicy": {
+            "Condition": "IsMaster",
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sns:Publish"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "events.amazonaws.com"
+                            },
+                            "Resource": [
+                                {
+                                    "Ref": "SNSTopic"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "Topics": [
+                    {
+                        "Ref": "SNSTopic"
+                    }
+                ]
+            },
+            "Type": "AWS::SNS::TopicPolicy"
         }
     }
 }

@@ -1,5 +1,6 @@
+from awacs import aws
 from troposphere import Parameter, Ref, Template, Equals, Condition, Not, AWS_ACCOUNT_ID
-from troposphere import guardduty
+from troposphere import guardduty, sns, events
 
 MASTER_ACCOUNT_ID = "1234"
 MEMBER_ACCOUNT_ID = "5678"
@@ -39,6 +40,50 @@ member = t.add_resource(guardduty.Member(
     MemberId=MEMBER_ACCOUNT_ID,
     Email=MEMBER_ACCOUNT_EMAIL,
     DetectorId=Ref(detector)
+))
+
+snstopic = t.add_resource(sns.Topic(
+    "SNSTopic",
+    Condition="IsMaster",
+    Subscription=[
+        # put any subscriptions here
+    ]
+))
+
+event = t.add_resource(events.Rule(
+    "EventsRule",
+    Condition="IsMaster",
+    EventPattern={
+        "source": [
+            "aws.guardduty"
+        ]
+    },
+    State="ENABLED",
+    Targets=[
+        events.Target(
+            Arn=Ref(snstopic),
+            Id="sns",
+        )
+    ]
+))
+
+# Allow events to send notifications to SNS
+t.add_resource(sns.TopicPolicy(
+    "SNSTopicPolicy",
+    Condition="IsMaster",
+    PolicyDocument=aws.Policy(
+        Statement=[
+            aws.Statement(
+                Effect=aws.Allow,
+                Action=[
+                    aws.Action("sns", "Publish"),
+                ],
+                Principal=aws.Principal("Service", "events.amazonaws.com"),
+                Resource=[Ref(snstopic)],
+            ),
+        ]
+    ),
+    Topics=[Ref(snstopic)]
 ))
 
 print(t.to_json())
